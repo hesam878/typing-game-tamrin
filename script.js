@@ -1,67 +1,187 @@
-const msgEl = $('#msg');
-const randomNum = getRandomNumber();
-console.log('عدد:', randomNum);
-window.SpeechRecognition =
-window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition = new window.SpeechRecognition();
-recognition.start();
-function onSpeak(e) {
-  const msg = e.results[0][0].transcript;
+const word = $('#word');
+const text = $('#text');
+const scoreEl = $('#score');
+const timeEl = $('#time');
+const endgameEl = $('#end-game-container');
+const settingsBtn = $('#settings-btn');
+const settings = $('#settings');
+const settingsForm = $('#settings-form');
+const sahktiSelect = $('#sahkti');
 
-  writeMessage(msg);
-  checkNumber(msg);
-}
-function toEnglishDigits(str) {
-  return str.replace(/[۰-۹]/g, d => '0123456789'[d.charCodeAt(0) - 1776]);
-}
-function toPersianDigits(num) {
-  return num.toString().replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
-}
+const asanWords = [
+  'سیب',
+  'آب',
+  'کتاب',
+  'در',
+  'قلم',
+  'مداد',
+  'دوچرخه',
+  'چای',
+  'گل',
+  'درخت',
+  'کفش',
+  'نان',
+  'دست',
+  'صورت',
+  'خانه',
+  'ماشین',
+  'مدرسه',
+  'پنجره',
+  'آسمان',
+  'نور'
+];
 
-function writeMessage(msg) {
-  msgEl.html( `
-    <div>عدد شما: </div>
-    <span class="box">${msg}</span>
+const motevasetWords = [
+  'باران',
+  'جنگل',
+  'مسافرت',
+  'دانش آموز',
+  'صبحانه',
+  'هواپیما',
+  'شکلات',
+  'کوهستان',
+  'رستوران',
+  'پرندگان',
+  'نیروگاه',
+  'کتری',
+  'فرش',
+  'چراغ',
+  'راننده',
+  'تلویزیون',
+  'پزشک',
+  'خنده دار',
+  'کتابخانه',
+  'دوستی'
+];
+
+const sakhtWords = [
+  'فلسفه',
+  'معماری',
+  'بازسازی',
+  'قانون گذاری',
+  'مسئولیت پذیری',
+  'خود آگاهی',
+  'هم زیستی',
+  'پیشرفتگی',
+  'توسعه پذیری',
+  'مصلحت اندیشی',
+  'دگرگونی',
+  'نظام مندی',
+  'ناهمگونی',
+  'ترکیب پذیری',
+  'رفتار شناسی',
+  'ناکار آمدی',
+  'بازدارندگی',
+  'انتزاعی',
+  'فرهنگ سازی',
+  'خود انتقادی'
+];
+
+
+let randomWord;
+
+let emtyaz = 0;
+
+let time = 10;
+
+
+const estefade=[];
+
+let difficulty =
+  localStorage.getItem('difficulty') !== null
+    ? localStorage.getItem('difficulty')
+    : 'motevaset';
+
+sahktiSelect.val(difficulty);
+
+
+text.focus();
+
+const timeInterval = setInterval(updateTime, 1000);
+
+function getRandomWord() {
+  let wordList;
+
+  if (sahktiSelect.val() == 'asan') {
+    wordList = asanWords;
+    time=10;
+  } else if (sahktiSelect.val() == 'motevaset') {
+    time=13;
+    wordList = motevasetWords;
+  } else if (sahktiSelect.val() == 'sakht') {
+    time=15;
+    wordList = sakhtWords;
+  }
+
+  const unused = wordList.filter(w => !estefade.includes(w));
+  if (unused.length === 0) {
+
+clearInterval(timeInterval);
+  endgameEl.html(`
+    <h1>تبریک! شما پیروز شدید!</h1>
+    <p>${emtyaz +1} متیاز نهایی شما </p>
+    <button onclick="location.reload()">بازی مجدد</button>
   `);
-}
-function checkNumber(msg) {
-  const englishMsg = toEnglishDigits(msg);
-  const num = +englishMsg;
-
-  if (Number.isNaN(num)) {
-    msgEl.append('<div>شماره شما معتبر نیست</div>');
-    return;
+      endgameEl.css('display', 'flex');
+  return'';
   }
-
-  if (num > 100 || num < 1) {
-    msgEl.append('<div>شماره باید بین 1 تا 100 باشد</div>');
-    return;
-  }
-
-  if (num === randomNum) {
-    $('body').html( `
-      <h2>تبریک! شما عدد را حدس زدید!<br><br>
-      عدد ${toPersianDigits(num)}</h2>
-      <button class="play-again" id="play-again">بازی مجدد</button>
-    `);
-  } else if (num > randomNum) {
-    msgEl.append('<div>عدد پایین تر است</div>');
-  } else {
-    msgEl.append('<div>عدد بالا تر است</div>');
-  }
+      const randomIndex = Math.floor(Math.random() * unused.length);
+  const selected = unused[randomIndex];
+  estefade.push(selected);
+    return selected;
 }
 
-function getRandomNumber() {
-  return Math.floor(Math.random() * 100) + 1;
+
+function addWordToDOM() {
+  randomWord = getRandomWord();
+  word.html(randomWord);
 }
 
-recognition.addEventListener('result', onSpeak);
+function updateScore() {
+  emtyaz++;
+  scoreEl.html(emtyaz);
+}
 
+function updateTime() {
+  time--;
+  timeEl.html(time + 'ثانیه');
 
-recognition.addEventListener('end', () => recognition.start());
+  if (time === 0) {
+    clearInterval(timeInterval);
 
-$('body').on('click', e => {
-  if (e.target.id == 'play-again') {
-    window.location.reload();
+    gameOver();
   }
+}
+function gameOver() {
+  endgameEl.html(`
+    <h1>زمان شما تمام شد</h1>
+    <p> متیاز نهایی شما ${emtyaz}</p>
+    <button onclick="location.reload()">بازی مجدد</button>
+  `);
+
+  endgameEl.css('display' , 'flex');
+}
+
+addWordToDOM();
+
+
+text[0].addEventListener('input', e => {
+  const insertedText = e.target.value.trim();
+
+  if (insertedText === randomWord) {
+    addWordToDOM();
+    updateScore();
+
+    e.target.value='';
+
+
+    updateTime();
+  }
+});
+
+settingsBtn.on('click', () => settings.toggleClass('hide'));
+
+settingsForm.on('change', e => {
+  difficulty = sahktiSelect.val();
+  localStorage.setItem('difficulty', difficulty);
 });

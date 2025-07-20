@@ -4,18 +4,53 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+      integrity="sha256-+N4/V/SbAFiW1MPBCXnfnP9QSN3+Keu+NlB+0ev/YKQ="
+      crossorigin="anonymous"
+    />
     <link rel="stylesheet" href="style.css" />
-    <title>حدس زدن عدد با صحبت کردن</title>
+    <title>سرعت تایپ</title>
   </head>
   <body>
-    <img src="../img/mic.png" alt="Speak" />
+    <button id="settings-btn" class="settings-btn">
+      <i class="fas fa-cog"></i>
+    </button>
 
-    <h1>حدس زدن یک عدد بین ۱ تا ۱۰۰</h1>
+    <div id="settings" class="settings">
+      <form id="settings-form">
+        <div>
+          <label for="difficulty">سختی</label>
+          <select id="sahkti">
+            <option value="asan">آسان</option>
+            <option value="motevaset">متوسط</option>
+            <option value="sakht">سخت</option>
+          </select>
+        </div>
+      </form>
+    </div>
 
-    <h3>شماره را در میکروفون خود به فارسی بگویید</h3>
+    <div class="container">
+      <h2>👩‍💻 سرعت تایپ 👨‍💻</h2>
+      <small>عبارت زیر را تایپ کنید:</small>
 
-    <div id="msg" class="msg"></div>
+      <h1 id="word"></h1>
 
+      <input
+        type="text"
+        id="text"
+        autocomplete="off"
+        placeholder="کلمه مشخص شده را اینجا تایپ کنید..."
+        autofocus
+      />
+
+      <p class="time-container">زمان باقی مانده: <span id="time">۱۰ ثانیه</span></p>
+
+      <p class="score-container">امتیاز: <span id="score">۰</span></p>
+
+      <div id="end-game-container" class="end-game-container"></div>
+    </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="script.js"></script>
